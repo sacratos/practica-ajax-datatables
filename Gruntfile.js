@@ -292,17 +292,25 @@ module.exports = function (grunt) {
             'styles/fonts/{,*/}*.*'
           ]
         }, {
+          src: '<%= config.app %>/php/cargar_vdoctores.php',
+          dest: '<%= config.dist %>/php/cargar_vdoctores.php'
+        },{
+          src: '<%= config.app %>/php/mysql.php',
+          dest: '<%= config.dist %>/php/mysql.php'
+        },{
+          src: '<%= config.app %>/php/ssp.class.php',
+          dest: '<%= config.dist %>/php/ssp.class.php'
+        },
+        {
           src: 'node_modules/apache-server-configs/dist/.htaccess',
           dest: '<%= config.dist %>/.htaccess'
-        }, {
-          src: '<%= config.app %>/php/cargar_vdoctores.php',
-          dest: '<%= config.dist %>/cargar_vdoctores.php'
-        }, {
-          src: '<%= config.app %>/php/mysql.php',
-          dest: '<%= config.dist %>/mysql.php'
-        }, {
-          src: '<%= config.app %>/php/ssp.class.php',
-          dest: '<%= config.dist %>/ssp.class.php'
+        },
+        {
+          expand: true,
+          dot: true,
+          cwd: 'bower_components/bootstrap/dist',
+          src: 'fonts/*',
+          dest: '<%= config.dist %>'
         }]
       },
       styles: {
