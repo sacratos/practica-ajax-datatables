@@ -30,7 +30,7 @@
             <div class="col-md-12">
                 <table id="miTabla" class="table stripe">
                     <thead>
-                        <th>Doctor</th>
+                        <th><a>Doctor</a></th>
                         <th>Nº Colegiado</th>
                         <th>Clínica</th>
                         <th name="editarbtn">Editar</th>
@@ -38,7 +38,7 @@
                     </thead>
                     <tbody></tbody>
                     <tfoot>
-                        <th>Doctor</th>
+                        <th><a>Doctor</a></th>
                         <th>Nº Colegiado</th>
                         <th>Clínica</th>
                         <th name="editarbtn">Editar</th>
@@ -50,16 +50,16 @@
     </div>
 
 
-<div id="formulario" class="row" >
+<div id="formulario" class="row">
            <div class="col-md-4 col-md-offset-3">
                 <!--/*el formulario es aproximadamente un copy-paste de http://getbootstrap.com/css/#forms -->
           <h4>Editar Doctor: </h4>   
                  <form class="form-horizontal">
                  <p><a href="https://github.com/sacratos/practica-ajax-datatables">Sigue el trabajo en github.</a></p>                       <div>
                        <div class="form-group">
-                          <label for="idClinica" class="col-sm-2 control-label">Id Clínica</label>
+                          <label for="idClinica" class="col-sm-2 control-label">Id Doctor</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="idClinica" disabled>
+                                <input type="text" class="form-control" id="idDoctor" disabled>
                             </div>
                         </div>
                         <div class="form-group">
@@ -85,13 +85,14 @@
                         
                         <div class="form-group">
                             <div class="col-sm-10 col-sm-offset-2">
-                                <button id="guardar" type="submit" class="btn btn-primary">Guardar</button>
+                                <button id="guardar" name="guardar" type="submit" class="btn btn-primary">Guardar</button>
                             </div>
                         </div>
 
                     </div>
                 </form>
-                <!-- ventana modal borrar
+                
+<!-- ventana modal borrar
         -->
 <div class="modal fade" id="basicModal" name="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
     <div class="modal-dialog">
@@ -105,7 +106,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" type="submit" id="confBorrar" name="confBorrar" data-dismiss="modal" class="btn btn-primary aceptarBorrado">Si</button>
+                <button type="button" type="submit" id="borrar" name="borrar" data-dismiss="modal" class="btn btn-primary aceptarBorrado">Si</button>
         </div>
 
     </div>

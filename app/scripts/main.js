@@ -1,7 +1,9 @@
 'use strict';
 $(document).ready(function() {
+    $('#tabla').fadeIn(100);
     $('#formulario').fadeOut(100);
     $('#basicModal').fadeOut(100);
+    $('#formularioCrear').fadeOut(100);
     var miTabla = $('#miTabla').DataTable({
         'processing': true,
         'serverSide': true,
@@ -55,10 +57,31 @@ $(document).ready(function() {
 
         var nRow = $(this).parents('tr')[0];
         var aData = miTabla.row(nRow).data();
-        $('#idClinica').val(aData.idClinica);
+        $('#idDoctor').val(aData.id_doctor);
         $('#nombre').val(aData.doctor);
         $('#numcolegiado').val(aData.numcolegiado);
         /*lo más cómodo para la provincia sería esto: (hemos convertido los values a mayúsculas mediante multicursor y CTRL + K + U (Sublime)*/
+        
+        $('#clinica').val(aData.clinica);
+        /*Como hemos cambiado las option del select, más cómodo también para el envío de datos, esto que teníamos lo comentamos:*/
+        /*$('#provincia option').filter(function() {
+            return this.text.toLowerCase() === aData.provincia.toLowerCase();
+        }).attr('selected', true);*/
+        
+    });
+
+     $('#formulario').on('click', '.guardar', function(e) {
+        e.preventDefault();
+        $('#tabla').fadeOut(100);
+        $('#formulario').fadeIn(100);
+
+        var nRow = $(this).parents('tr')[0];
+        var aData = miTabla.row(nRow).data();
+        $('#idDoctor').val(aData.id_doctor);
+        $('#nombre').val(aData.doctor);
+        $('#numcolegiado').val(aData.numcolegiado);
+        /*lo más cómodo para la provincia sería esto: (hemos convertido los values a mayúsculas mediante multicursor y CTRL + K + U (Sublime)*/
+        
         $('#clinica').val(aData.clinica);
         /*Como hemos cambiado las option del select, más cómodo también para el envío de datos, esto que teníamos lo comentamos:*/
         /*$('#provincia option').filter(function() {
@@ -91,10 +114,7 @@ $(document).ready(function() {
   // });
 
        });
-
-
-});
-
+     
 /* En http://www.datatables.net/reference/option/ hemos encontrado la ayuda necesaria
 para utilizar el API de datatables para el render de los botones */
 /* Para renderizar los botones según bootstrap, la url es esta: 
