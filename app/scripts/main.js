@@ -1,9 +1,6 @@
 'use strict';
+$('#formulario').toggle();
 $(document).ready(function() {
-    $('#tabla').fadeIn(100);
-    $('#formulario').fadeOut(100);
-    $('#basicModal').fadeOut(100);
-    $('#formularioCrear').fadeOut(100);
     var miTabla = $('#miTabla').DataTable({
         'processing': true,
         'serverSide': true,
@@ -50,7 +47,7 @@ $(document).ready(function() {
 
     /*Creamos la función que muestre el formulario cuando hagamos click*/
     /*ojo, es necesario hacerlo con el método ON. Tanto por rendimiento como porque puede haber elementos (botones) que todavía no existan en el document.ready*/
-     $('#miTabla').on('click', '.editarbtn', function(e) {
+     $('#miTabla').on('click', '.editarbtn', function(e){
         e.preventDefault();
         $('#tabla').fadeOut(100);
         $('#formulario').fadeIn(100);
@@ -60,42 +57,100 @@ $(document).ready(function() {
         $('#idDoctor').val(aData.id_doctor);
         $('#nombre').val(aData.doctor);
         $('#numcolegiado').val(aData.numcolegiado);
-        /*lo más cómodo para la provincia sería esto: (hemos convertido los values a mayúsculas mediante multicursor y CTRL + K + U (Sublime)*/
         
         $('#clinica').val(aData.clinica);
-        /*Como hemos cambiado las option del select, más cómodo también para el envío de datos, esto que teníamos lo comentamos:*/
-        /*$('#provincia option').filter(function() {
-            return this.text.toLowerCase() === aData.provincia.toLowerCase();
-        }).attr('selected', true);*/
         
     });
 
      $('#formulario').on('click', '.guardar', function(e) {
         e.preventDefault();
-        $('#tabla').fadeOut(100);
-        $('#formulario').fadeIn(100);
+        $('#tabla').fadeIn(100);
+        $('#formulario').fadeOut(100);
 
         var nRow = $(this).parents('tr')[0];
         var aData = miTabla.row(nRow).data();
         $('#idDoctor').val(aData.id_doctor);
         $('#nombre').val(aData.doctor);
         $('#numcolegiado').val(aData.numcolegiado);
-        /*lo más cómodo para la provincia sería esto: (hemos convertido los values a mayúsculas mediante multicursor y CTRL + K + U (Sublime)*/
-        
         $('#clinica').val(aData.clinica);
-        /*Como hemos cambiado las option del select, más cómodo también para el envío de datos, esto que teníamos lo comentamos:*/
-        /*$('#provincia option').filter(function() {
-            return this.text.toLowerCase() === aData.provincia.toLowerCase();
-        }).attr('selected', true);*/
-         var str = aData.idClinica;
-
-          str = str.split(",");
-
-         
-          $('#clinica').val(str);
+       
+        
     });
 
-     $('#miTabla').on('click', '.borrarbtn', function(e) {
+   //boton enviar del formulario de editar
+       $('.guardar').click(function(e) {
+           e.preventDefault();
+           id_doctor = $('#idDoctor').val();
+           doctor = $('#nombre').val();
+           numcolegiado = $('#numcolegiado').val();
+           clinica = $('#clinica').val();
+           $.ajax({
+               type: 'POST',
+               dataType: 'json',
+               url: 'php/guardar.php',
+               //lo más cómodo sería mandar los datos mediante 
+               //var data = $( "form" ).serialize();
+               //pero como el php tiene otros nombres de variables, lo dejo así
+               //estos son los datos que queremos actualizar, en json:
+               data: {
+                   id_doctor: idDoctor,
+                   doctor: nombre,
+                   numcolegiado: numcolegiado,
+                   id_clinica:id_clinica
+                   
+               },
+               error: function(xhr, status, error) {
+                   //mostraríamos alguna ventana de alerta con el error
+                    alert(error);
+                    alert(xhr);
+                    alert(status);
+                   // $('#edicionerr').slideDown(2000).slideUp(2000);
+                    $.growl({
+                  
+                  icon: "glyphicon glyphicon-remove",
+                  message: "Error al editar!"
+                },{
+                  type: "danger"
+                });
+               },
+               success: function(data) {
+                  var $mitabla =  $("#miTabla").dataTable( { bRetrieve : true } );
+                  $mitabla.fnDraw();
+                 // alert("ok");
+                //  $('#edicionok').slideDown(2000).slideUp(2000);
+               
+               
+                 if(data[0].estado==0){
+                 $.growl({
+                  
+                  icon: "glyphicon glyphicon-ok",
+                  message: "Doctor editado correctamente!"
+                },{
+                  type: "success"
+                });
+               }else{
+                 $.growl({
+                  
+                  icon: "glyphicon glyphicon-remove",
+                  message: "Error al editar el doctor!"
+                },{
+                  type: "danger"
+                });
+               }
+               },
+               complete: {
+                   //si queremos hacer algo al terminar la petición ajax
+               }
+           });
+           $('#tabla').fadeIn(100);
+           $('#formulario').fadeOut(100);
+            //$("#edicion").fadeOut(100);
+       });
+});
+
+
+/*
+    $('#miTabla').on('click', '.borrarbtn', function(e) {
            //e.preventDefault();
                     var nRow = $(this).parents('tr')[0];
            var aData = miTabla.row(nRow).data();
@@ -111,9 +166,8 @@ $(document).ready(function() {
              //  e.preventDefault();
 
           
-  // });
-
-       });
+     });
+      
      
 /* En http://www.datatables.net/reference/option/ hemos encontrado la ayuda necesaria
 para utilizar el API de datatables para el render de los botones */
