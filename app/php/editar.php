@@ -22,17 +22,16 @@ mysql_query('SET names utf8');
 * SQL queries
 * Get data to display
 */
-$id = $_POST["id"];
+$id_doctor = $_POST["id_doctor"];
 $nombre = $_POST["nombre"];
-$localidad = $_POST["localidad"];
-$provincia = $_POST["provincia"];
-$cif = $_POST["cif"];
+$numcolegiado = $_POST["numcolegiado"];
+$clinica = $_POST["clinica"];
 /* Consulta UPDATE */
-$query = "UPDATE clinicas SET
-nombre = '" . $nombre . "',
-localidad = '" . $localidad . "',
-provincia = '" . $provincia . "',
-cif = '" . $cif . "'
+$query = "UPDATE vdoctores SET
+id_doctor = '" . $id_doctor . "',
+doctor = '" . $nombre . "',
+numcolegiado = '" . $numcolegiado . "',
+clinica = '" . $clinica . "'
 WHERE id = " . $id;
 //mysql_query($query, $gaSql['link']) or fatal_error('MySQL Error: ' . mysql_errno());
 /*En función del resultado correcto o no, mostraremos el mensaje que corresponda*/
