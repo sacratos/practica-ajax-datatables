@@ -29,14 +29,15 @@
     <div class="container-fluid">
         <div id="tabla" class="row">
             <div class="col-md-12">
-                <a class="btn btn-success github pull-right" role="button" href="https://github.com/sacratos/practica-ajax-datatables" target="_blank">Ir al github</a><br/>
+                <a class="btn btn-success github pull-right" role="button" href="https://github.com/sacratos/practica-ajax-datatables" target="_blank">Ir al github</a>
+                <br/>
                 <button id="añadirDoctor" type="button" class="btn btn-info navbar-btn">Añadir doctor</button>
                 <table id="miTabla" class="table stripe">
                     <thead>
                         <th>Nombre doctor</th>
                         <th>Numero de colegiado</th>
-                        <th>IdClinica</th>
                         <th>Nombre Clinica</th>
+                        <th>idClinica</th>
                         <th>Editar</th>
                         <th>Borrar</th>
                     </thead>
@@ -45,8 +46,8 @@
                     <tfoot>
                         <th>Nombre doctor</th>
                         <th>Numero de colegiado</th>
-                        <th>IdClinica</th>
                         <th>Nombre Clinica</th>
+                        <th>idClinica</th>
                         <th>Editar</th>
                         <th>Borrar</th>
                     </tfoot>
@@ -54,98 +55,104 @@
             </div>
         </div>
     </div>
-
-
     <div id="formularioEditar" class="row hidden">
-           <div class="col-md-4 col-md-offset-3">
-                <!--/*el formulario es aproximadamente un copy-paste de http://getbootstrap.com/css/#forms -->
-          <h4>Editar Doctor: </h4>   
-                 <form class="form-horizontal">
-                 <p><a href="https://github.com/sacratos/practica-ajax-datatables">Sigue el trabajo en github.</a></p>                       <div>
-                       <div class="form-group">
-                          <label for="id_doctor" class="col-sm-2 control-label">Id Doctor</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="id_doctor" disabled>
-                            </div>
+        <div class="col-md-4 col-md-offset-3">
+            <!--/*el formulario es aproximadamente un copy-paste de http://getbootstrap.com/css/#forms -->
+            <h4>Editar Doctor: </h4>
+            <form id="formEditar" action="" method="post" class="form-horizontal">
+                <p><a href="https://github.com/sacratos/practica-ajax-datatables">Sigue el trabajo en github.</a></p>
+                
+                <div class="hidden">
+                    <label><input disabled="true" type="text" name="idDoctor" id="idDoctor"></label>
+                </div>
+                <div class="form-group">
+                    <label for="nombre" class="col-sm-2 control-label">Nombre:*</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del doctor">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="numcolegiado" class="col-sm-2 control-label">Nº Coleg:</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="numcolegiado" name="numcolegiado" placeholder="Número de colegiado">
+                    </div>
+                </div>
+                <div class="hidden">
+                    <label><input disabled="true" type="text" id="idClinica"></label>
+                </div>
+                <div class="form-group">
+                    <label for="clinicas" class="col-sm-2 control-label">Clínicas*:</label>
+                    <div class="col-sm-10">
+                        <select multiple id="clinicas" name="clinicas">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-10 col-sm-offset-2">
+                        <button id="enviar" type="submit" class="btn btn-primary">Enviar</button>
+                        <a class="btn btn-danger" href="index.html" role="button">Cancelar</a>
+                    </div>
+                </div>
+        </div>
+        </form>
+    </div>
+    </div>
+    <!--Añadir Doctor:-->
+    <div id="formularioCrear" class="row">
+        <div class="col-md-4 col-md-offset-3">
+            <!--/*el formulario es aproximadamente un copy-paste de http://getbootstrap.com/css/#forms -->
+            <form class="form-horizontal" id="formCrear" name="formCrear" method="post" action="#">
+                <div>
+                    <h2>Nuevo Doctor</h2>
+                    <div class="form-group">
+                        <label for="nombreNuevo" class="col-sm-2 control-label">Nombre:*</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="nombreNuevo" name="nombreNuevo" placeholder="Nombre del doctor">
                         </div>
-                        <div class="form-group">
-                            <label for="nombre" class="col-sm-2 control-label">Nombre</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="nombre" placeholder="Nombre del doctor">
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="numcolegiadoNuevo" class="col-sm-2 control-label">Nº Coleg</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="numcolegiadoNuevo" name="numcolegiadoNuevo" placeholder="Número de colegiado">
                         </div>
-                        <div class="form-group">
-                            <label for="numcolegiado" class="col-sm-2 control-label">Nº Colegiado</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="numcolegiado" placeholder="Número de colegiado">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="clinica" class="col-sm-2 control-label">Clinicas</label>
-                            <div class="col-sm-10">
-                            <select multiple class="form-control" id="clinica" class="clinica">
-                                    
+                    </div>
+                    <div class="form-group">
+                        <label for="clinicas2" class="col-sm-2 control-label">Clínicas*:</label>
+                        <div class="col-sm-10">
+                            <select multiple id="clinicas2" name="clinicas2">
                             </select>
-                            </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <div class="col-sm-10 col-sm-offset-2">
-                                <button id="guardar" name="guardar" type="submit" class="btn btn-primary">Guardar</button>
-                            </div>
-                        </div>
-
                     </div>
-                </form>
+                    <div class="form-group">
+                        <div class="col-sm-10 col-sm-offset-2">
+                            <button id="enviarDoc" type="submit" class="btn btn-primary">Enviar</button>
+                            <a class="btn btn-danger" href="index.html" role="button">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--ES AQUI DONDE DA FALLO-->
+    <div class="modal fade hidden" id="basicModal" name="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+
+                        <h4 class="modal-title" id="myModalLabel">Borrar Doctor</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3>¿Esta seguro de que quiere borrar el doctor?</h3>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" type="submit" id="confBorrar" name="confBorrar" data-dismiss="modal" class="btn btn-primary aceptarBorrado">Si</button>
+                    </div>
+
+                </div>
             </div>
         </div>
-
-            <!--Añadir Doctor:-->
-<div id="formularioCrear" class="row hidden">
-            <div class="col-md-4 col-md-offset-3">
-                <!--/*el formulario es aproximadamente un copy-paste de http://getbootstrap.com/css/#forms -->
-                <form class="form-horizontal" id="formCrear" name="formCrear" method="post" action="#"  >
-                    <div>
-                    <h2>Añadir nuevo doctor</h2>
-                        
-                        <div class="form-group">
-                            <label for="nombreNuevo" class="col-sm-2 control-label">Nombre:*</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="nombreNuevo" name="nombreNuevo"  placeholder="Nombre del doctor">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="numcolegiadoNuevo" class="col-sm-2 control-label">Nº Colegiado</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="numcolegiadoNuevo" name="numcolegiadoNuevo" placeholder="Número de colegiado">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="clinicas2" class="col-sm-2 control-label">Nombre clinicas:</label>
-                            <div class="col-sm-10">
-                                <select  multiple id="clinicas2" name="clinicas2" >
-                                  
-                                </select>
-                            </div>
-                        </div>
-                       
-                        <div class="form-group">
-                            <div class="col-sm-10 col-sm-offset-2">
-                                <button id="enviar" type="submit" class="btn btn-primary">Enviar</button>
-                                
-                                <a class="btn btn-danger" href="index.html" role="button">Cancelar</a>
-                            </div>
-                        </div>
-
-                    </div>
-                </form>
-
-            </div>
-        </div>
-
-            
-
-     <!-- build:js(.) scripts/vendor.js -->
+    <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
@@ -153,7 +160,6 @@
     <script src="bower_components/datatables/media/js/jquery.dataTables.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
-
     <!-- build:js({app,.tmp}) scripts/main.js -->
     <script src="scripts/jquery.dataTables.js"></script>
     <script src="scripts/dataTables.bootstrap.js"></script>
