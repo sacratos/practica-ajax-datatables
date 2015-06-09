@@ -82,16 +82,42 @@ $(document).ready(function() {
         }],
     });
 
-    $('#tabla').on('click', '.editarbtn', function(e) {
+    function cargarClinicasCrear2() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'php/listarClinicas.php',
+            async: false,
+            error: function(xhr, status, error) {},
+            success: function(data) {
+                $('#clinicas').empty();
+                $.each(data, function() {
+                    $('#clinicas').append(
+                        $('<option ></option>').val(this.id_clinica).html(this.nombre)
+                    );
+                });
+
+            },
+            complete: {}
+        });
+    }
+    $('#miTabla').on('click', '.editarbtn', function(e) {
         e.preventDefault();
+
         $('#tabla').fadeOut(100);
         $('#formularioEditar').fadeIn(100);
+
         var nRow = $(this).parents('tr')[0];
         var aData = miTabla.row(nRow).data();
         $('#id_doctor').val(aData.id_doctor);
-        $('#nombre').val(aData.doctor);
+        $('#nombre').val(aData.nombre);
         $('#numcolegiado').val(aData.numcolegiado);
-        $('#clinica').val(aData.clinica);
+        cargarClinicasCrear2();
+        $('#clinicas').val(aData.clinica);
+        var str = aData.id_clinica;
+        str = str.split(",");
+        $('#clinicas').val(str);
+
     });
     //Cargamos nombre de la clinica
     function cargarClinica() {
@@ -104,10 +130,10 @@ $(document).ready(function() {
                     //data: { id_clinica: id_clinica, nombre: nombre, ….,  id_tarifa: id_tarifa },
             })
             .done(function(data) {
-                $('#idClinica').empty();
+                $('#clinicas').empty();
                 $.each(data, function() {
-                    $('#idClinica').append(
-                        $('<option></option>').val(this.id_clinica).html(this.nombre)
+                    $('#clinicas').append(
+                        $('<option></option>').val(this.id_clinica).html(this.clinica)
                     );
                 });
             })
@@ -161,17 +187,6 @@ $(document).ready(function() {
                     numcolegiadoNuevo: numcolegiadoNuevo,
                     clinicas2: clinicas2
                 },
-                error: function(xhr, status, error) {
-                    $.growl({
-
-                        icon: "glyphicon glyphicon-remove",
-                        message: "ERROR: fallo al crear doctor"
-
-                    }, {
-                        type: "danger"
-                    });
-
-                },
                 success: function(data) {
                     var $mitabla = $("#miTabla").dataTable({
                         bRetrieve: true
@@ -192,7 +207,7 @@ $(document).ready(function() {
                         $.growl({
 
                             icon: "glyphicon glyphicon-remove",
-                            message: "ERROR: fallo al crear doctor"
+                            message: "ERROR: fallo al hacer el doctor"
 
                         }, {
                             type: "danger"
@@ -236,42 +251,12 @@ $(document).ready(function() {
             complete: {}
         });
     }
+
+    
     $('#miTabla').on('click', '.borrarbtn', function(e) {
-      $('#basicModal').fadeIn(100);
-      console.log('test');
-           e.preventDefault();
-           var nRow = $(this).parents('tr')[0];
-           var aData = miTabla.row(nRow).data();
-           var idDoctor = aData.idDoctor;
-
-
-           $.ajax({
-               /*en principio el type para api restful sería delete pero no lo recogeríamos en $_REQUEST, así que queda como POST*/
-               type: 'POST',
-               dataType: 'json',
-               url: 'php/borrar.php',
-               //estos son los datos que queremos actualizar, en json:
-               data: {
-                   id_doctor: idDoctor
-               },
-               error: function(xhr, status, error) {
-                   //mostraríamos alguna ventana de alerta con el error
-                   alert("Ha entrado en error");
-               },
-               success: function(data) {
-                   //obtenemos el mensaje del servidor, es un array!!!
-                   //var mensaje = (data["mensaje"]) //o data[0], en función del tipo de array!!
-                   //actualizamos datatables:
-                   /*para volver a pedir vía ajax los datos de la tabla*/
-                   miTabla.fnDraw();
-               },
-               complete: {
-                   //si queremos hacer algo al terminar la petición ajax
-               }
-           });
-       });
-    $('#modalBorrarDoctor').on('click', '#confBorrar', function(e) {
-        $('#basicModal').fadeIn(100);
+        var nRow = $(this).parents('tr')[0];
+        var aData = miTabla.row(nRow).data();
+        id_doctor = aData.id_doctor;
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -280,9 +265,13 @@ $(document).ready(function() {
                 id_doctor: id_doctor
             },
             error: function(xhr, status, error) {
+              var $mitabla = $("#miTabla").dataTable({
+                    bRetrieve: true
+                });
+                $mitabla.fnDraw();
                 $.growl({
                     icon: "glyphicon glyphicon-remove",
-                    message: "ERROR: fallo al borrar"
+                    message: "SE HA BORRADO EL USUARIO"
                 }, {
                     type: "danger"
                 });
@@ -308,42 +297,50 @@ $(document).ready(function() {
 
     //boton de modificar
     $('#enviar').click(function(e) {
-           e.preventDefault();
-           idDoctor = $('#idDoctor').val();
-           nombre = $('#nombre').val();
-           numcolegiado = $('#numcolegiado').val();
-           idClinica = $('#idClinica').val();
-           nombreClinica = $('#clinicas').val();
-           
-           
+        e.preventDefault();
+        idDoctor = $('#idDoctor').val();
+        nombre = $('#nombre').val();
+        numcolegiado = $('#numcolegiado').val();
+        idClinica = $('#idClinica').val();
+        nombreClinica = $('#clinicas').val();
 
-           $.ajax({
-               type: 'POST',
-               dataType: 'json',
-               url: 'php/modificar.php',
-               //lo más cómodo sería mandar los datos mediante 
-               //var data = $( "form" ).serialize();
-               //pero como el php tiene otros nombres de variables, lo dejo así
-               //estos son los datos que queremos actualizar, en json:
-               data: {
-                   id_clinica: idClinica,
-                   nombre: nombre,
 
-               },
-               error: function(xhr, status, error) {
-                   //mostraríamos alguna ventana de alerta con el error
-               },
-               success: function(data) {
-                  var $mitabla =  $("#miTabla").dataTable( { bRetrieve : true } );
-                  $mitabla.fnDraw();
-               },
-               complete: {
-                   //si queremos hacer algo al terminar la petición ajax
-               }
-           });
 
-           $('#tabla').fadeIn(100);
-           $('#formularioEditar').fadeOut(100);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'php/editar.php',
+            //lo más cómodo sería mandar los datos mediante 
+            //var data = $( "form" ).serialize();
+            //pero como el php tiene otros nombres de variables, lo dejo así
+            //estos son los datos que queremos actualizar, en json:
+            data: {
+                id_clinica: idClinica,
+                nombre: nombre,
 
-       });
+            },
+            error: function(xhr, status, error) {
+                //mostraríamos alguna ventana de alerta con el error
+            },
+            success: function(data) {
+                var $mitabla = $("#miTabla").dataTable({
+                    bRetrieve: true
+                });
+                $mitabla.fnDraw();
+                $.growl({
+                    icon: "glyphicon glyphicon-remove",
+                    message: "SE HA MODIFICADO EL USUARIO"
+                }, {
+                    type: "success"
+                });
+            },
+            complete: {
+                //si queremos hacer algo al terminar la petición ajax
+            }
+        });
+
+        $('#tabla').fadeIn(100);
+        $('#formularioEditar').fadeOut(100);
+
+    });
 });

@@ -18,17 +18,22 @@ if (!mysql_select_db($gaSql['db'], $gaSql['link'])) {
     fatal_error('Could not select database ');
 }
 mysql_query('SET names utf8');
-if (isset($_REQUEST['idDoctor'])) {
-    if (empty($_REQUEST['idDoctor'])) {
+if (isset($_REQUEST['id_doctor'])) {
+    if (empty($_REQUEST['id_doctor'])) {
         return "El parámetro id_doctor viene vacio!";
     }
-    $idDoctor = $_REQUEST['idDoctor'];
+    $idDoctor = $_REQUEST['id_doctor'];
 }
+echo $idDoctor;
 /*
  * SQL queries
  * Get data to display
  */
-$query = "delete * from doctores where id_doctor='" . $idDoctor . "'";
+$query1 = "delete from clinica_doctor where id_doctor=" . $idDoctor . "";
+$query1_res = mysql_query($query1);
+
+
+$query = "delete from doctores where id_doctor=" . $idDoctor . "";
 $query_res = mysql_query($query);
 if (!$query_res) {
     if (mysql_errno() == 1451) {
