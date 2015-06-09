@@ -289,11 +289,12 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             'images/{,*/}*.webp',
             '{,*/}*.html',
-            'styles/fonts/{,*/}*.*'
+            'styles/fonts/{,*/}*.*',
+            'php/*.*'
           ]
         }, {
-          src: '<%= config.app %>/php/cargar_vdoctores.php',
-          dest: '<%= config.dist %>/php/cargar_vdoctores.php'
+          src: '<%= config.app %>/php/cargarClinicasVdoctores.php',
+          dest: '<%= config.dist %>/php/cargarClinicasVdoctores.php'
         },{
           src: '<%= config.app %>/php/mysql.php',
           dest: '<%= config.dist %>/php/mysql.php'

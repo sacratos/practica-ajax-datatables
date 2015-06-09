@@ -12,6 +12,7 @@
     <!--bower:css-->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="bower_components/datatables/media/css/jquery.dataTables.css" />
+    <link rel="stylesheet" href="bower_components/datatables-bootstrap3/BS3/assets/css/datatables.css" />
     <!--endbower-->
     <!--endbuild-->
     <!--build:css(.tmp) styles/main.css-->
@@ -28,23 +29,28 @@
     <div class="container-fluid">
         <div id="tabla" class="row">
             <div class="col-md-12">
+                <a class="btn btn-success github pull-right" role="button" href="https://github.com/sacratos/practica-ajax-datatables" target="_blank">Ir al github</a><br/>
+                <button id="añadirDoctor" type="button" class="btn btn-info navbar-btn">Añadir doctor</button>
                 <table id="miTabla" class="table stripe">
                     <thead>
-                        <th>Doctor</th>
-                        <th>Nº Colegiado</th>
-                        <th>Clínica</th>
-                        <th name="editarbtn">Editar</th>
-                       
+                        <th>Nombre doctor</th>
+                        <th>Numero de colegiado</th>
+                        <th>IdClinica</th>
+                        <th>Nombre Clinica</th>
+                        <th>Editar</th>
+                        <th>Borrar</th>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                    </tbody>
                     <tfoot>
-                        <th><a>Doctor</a></th>
-                        <th>Nº Colegiado</th>
-                        <th>Clínica</th>
-                        <th name="editarbtn">Editar</th>
+                        <th>Nombre doctor</th>
+                        <th>Numero de colegiado</th>
+                        <th>IdClinica</th>
+                        <th>Nombre Clinica</th>
+                        <th>Editar</th>
+                        <th>Borrar</th>
                     </tfoot>
                 </table>
-                <p><a href="https://github.com/sacratos/practica-ajax-datatables">Sigue el trabajo en github.</a></p>
             </div>
         </div>
     </div>
@@ -145,6 +151,7 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/jquery-validate/dist/jquery.validate.js"></script>
     <script src="bower_components/datatables/media/js/jquery.dataTables.js"></script>
+    <script src="bower_components/datatables-bootstrap3/BS3/assets/js/datatables.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
