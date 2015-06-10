@@ -109,7 +109,7 @@ $(document).ready(function() {
 
         var nRow = $(this).parents('tr')[0];
         var aData = miTabla.row(nRow).data();
-        $('#id_doctor').val(aData.id_doctor);
+        $('#idDoctor').val(aData.id_doctor);
         $('#nombre').val(aData.nombre);
         $('#numcolegiado').val(aData.numcolegiado);
         cargarClinicasCrear2();
@@ -315,9 +315,11 @@ $(document).ready(function() {
             //pero como el php tiene otros nombres de variables, lo dejo así
             //estos son los datos que queremos actualizar, en json:
             data: {
-                id_clinica: idClinica,
+                idClinica: idClinica,
+                idDoctor: idDoctor,
                 nombre: nombre,
-
+                numcolegiado: numcolegiado,
+                clinica: nombreClinica,
             },
             error: function(xhr, status, error) {
                 //mostraríamos alguna ventana de alerta con el error

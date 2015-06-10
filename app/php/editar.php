@@ -22,22 +22,46 @@ mysql_query('SET names utf8');
 * SQL queries
 * Get data to display
 */
-$id_doctor = $_POST["id_doctor"];
+$id_clinica=$_POST['idClinica'];
+$id_doctor = $_POST["idDoctor"];
 $nombre = $_POST["nombre"];
 $numcolegiado = $_POST["numcolegiado"];
 $clinica = $_POST["clinica"];
 /* Consulta UPDATE */
-$query = "UPDATE vdoctores SET
-id_doctor = '" . $id_doctor . "',
-doctor = '" . $nombre . "',
+
+//TENER LOS DATOS DE ANTES DE MODIFICAR
+//COMPROBAR QUE DATOS SON DIFERENTES
+//SI HAY MAS CLINICAS, HACER UN INSERT DE LA CLINICA EN clinica_doctor
+//update
+$query1 = "delete from clinica_doctor where id_doctor=" . $id_doctor . "";
+$query1_res = mysql_query($query1);
+$query2 = "delete from doctores where id_doctor=" . $id_doctor . "";
+$query2_res = mysql_query($query2);
+
+$query3 = "INSERT INTO doctores(id_doctor,nombre,numcolegiado) VALUES(". $id_doctor .",'". $nombre ."','". $numcolegiado ."')" ;
+$query3_res = mysql_query($query3);
+$hecho2=0;
+
+for ($i=0;$i<count($clinicas);$i++)
+{
+$query3 = "insert into clinica_doctor(id_doctor,id_clinica) values(
+             ". $id_doctor . ",
+            " . $id_clinica . ")" ;
+			
+            $query_res3 = mysql_query($query3);
+            
+}
+
+/*
+$query = "UPDATE doctores SET
+
+nombre = '" . $nombre . "',
 numcolegiado = '" . $numcolegiado . "',
-clinica = '" . $clinica . "'
-WHERE id = " . $id;
-//mysql_query($query, $gaSql['link']) or fatal_error('MySQL Error: ' . mysql_errno());
+WHERE id_doctor = " . $id_doctor;
+//mysql_query($query, $gaSql['link']) or fatal_error('MySQL 333333333Error: ' . mysql_errno());
 /*En función del resultado correcto o no, mostraremos el mensaje que corresponda*/
-$query_res = mysql_query($query);
 // Comprobar el resultado
-if (!$query_res) {
+if (!$query3_res) {
 $mensaje = 'Error en la consulta: ' . mysql_error() . "\n";
 $estado = mysql_errno();
 }

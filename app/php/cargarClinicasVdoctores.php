@@ -2,7 +2,7 @@
 /* Informacion de la base de datos */
 include("mysql.php" ); 
 /* Vista que vamos a utilizar */
-$table = 'vistaDoctores';
+$table = 'vdoctores';
  
 /* Clave primaria de la tabla */
 $primaryKey = 'id_doctor';
