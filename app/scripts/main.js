@@ -88,7 +88,9 @@ $(document).ready(function() {
             dataType: 'json',
             url: 'php/listarClinicas.php',
             async: false,
-            error: function(xhr, status, error) {},
+            error: function(xhr, status, error) {
+                alert("HA HABIDO UN ERROR")
+            },
             success: function(data) {
                 $('#clinicas').empty();
                 $.each(data, function() {
@@ -323,6 +325,12 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 //mostraríamos alguna ventana de alerta con el error
+                $.growl({
+                    icon: "glyphicon glyphicon-remove",
+                    message: "SE HA MODIFICADO EL USUARIO"
+                }, {
+                    type: "success"
+                });
             },
             success: function(data) {
                 var $mitabla = $("#miTabla").dataTable({
