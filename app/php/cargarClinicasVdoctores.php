@@ -1,25 +1,35 @@
 <?php
-/* Informacion de la base de datos */
-include("mysql.php" ); 
-/* Vista que vamos a utilizar */
+header('Access-Control-Allow-Origin: *');
+
 $table = 'vdoctores';
  
-/* Clave primaria de la tabla */
+// Table's primary key
 $primaryKey = 'id_doctor';
- 
-/* Array con los datos */
+
 $columns = array(
-    array( 'db' => 'id_doctor', 'dt' => 'id_doctor' ),
-    array( 'db' => 'doctor',  'dt' => 'nombre' ),
+    array( 'db' => 'id_doctor', 'dt' => 'idDoctor' ),
+    array( 'db' => 'nombre',  'dt' => 'nombre' ),
     array( 'db' => 'numcolegiado',   'dt' => 'numcolegiado' ),
-    array( 'db' => 'clinica',     'dt' => 'clinica' ),
-    array( 'db' => 'id_clinica',     'dt' => 'id_clinica' )
+    array( 'db' => 'nombre_clinica',     'dt' => 'nombreClinica' ),
+    array( 'db' => 'id_clinica',     'dt' => 'idClinica' )
 );
  
+// SQL server connection information
+$sql_details = array(
+    'user' => 'pablosaenz_root',
+    'pass' => 'infenlaces123',
+    'db'   => 'pablosaenz_clinicas',
+    'host' => 'www.infenlaces.com'
+);
  
-/* Incluimos la clase ssp.class.php */ 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * If you just want to use the basic configuration for DataTables with PHP
+ * server-side, there is no need to edit below this line.
+ */
+ 
 require( 'ssp.class.php' );
-/* Devolvemos la representacion como cadena en json de la vista */
+ 
 echo json_encode(
     SSP::simple( $_GET, $sql_details, $table, $primaryKey, $columns )
 );
+?>

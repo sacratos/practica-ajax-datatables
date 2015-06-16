@@ -1,33 +1,17 @@
 'use strict';
+
+$.validator.addMethod("lettersonly", function(value, element) {
+    return this.optional(element) || /^[a-z\s\ñ\Ñ]+$/i.test(value);
+}, "Solo letras por favor");
+
+
+var idDoctor;
+
+
 $(document).ready(function() {
-    $('#tabla').fadeIn(100);
-    $('#basicModal').toggle();
-    $('#formularioEditar').toggle();
-    $('#formularioCrear').toggle();
-    'use strict';
 
-    // Metodo especial de validacion para España, con acentos y ñ
-    $.validator.addMethod("lettersonly", function(value, element) {
-        return this.optional(element) || /^[áéíóúÁÉÍÓÚA-Za-zñÑ ]+$/i.test(value);
-    }, "Solo letras por favor");
-
-    // Declaracion inicial de variables para posterior utilizacion
-    var id_doctor;
-    var nombre;
-    var numcolegiado;
-    var id_clinica;
 
     var miTabla = $('#miTabla').DataTable({
-
-        // Modificamos las propiedades de las columnas especiales
-        "columnDefs": [{
-            "targets": [3],
-            "visible": false,
-            "searchable": false
-        }, {
-            "targets": [4, 5],
-            "orderable": false
-        }],
         'processing': true,
         'serverSide': true,
         'ajax': 'php/cargarClinicasVdoctores.php',
@@ -53,153 +37,186 @@ $(document).ready(function() {
             'oAria': {
                 'sSortAscending': ': Activar para ordenar la columna de manera ascendente',
                 'sSortDescending': ': Activar para ordenar la columna de manera descendente'
-            },
+            }
         },
-
         'columns': [{
             'data': 'nombre'
         }, {
             'data': 'numcolegiado'
         }, {
-            'data': 'clinica',
+            'data': 'nombreClinica',
             'render': function(data) {
                 return '<li>' + data + '</li><br>';
             }
         }, {
-            'data': 'id_clinica'
+            'data': 'idClinica',
+            "visible": false
         }, {
-            'data': 'id_doctor',
+            'data': 'idDoctor',
+            /*añadimos las clases editarbtn y borrarbtn para procesar los eventos click de los botones. No lo hacemos mediante id ya que habrá más de un
+            botón de edición o borrado*/
             'render': function(data) {
-                /*Boton para editar el doctor*/
-                return '<a class="btn btn-primary editarbtn" >Editar</a>';
-            }
+                return '<a class="btn btn-primary editarbtn" href=http://localhost/php/editar.php?id_doctor=' + data + '>Editar</a>';
+            },
         }, {
-            'data': 'id_doctor',
+            'data': 'idDoctor',
+            /*añadimos las clases editarbtn y borrarbtn para procesar los eventos click de los botones. No lo hacemos mediante id ya que habrá más de un
+            botón de edición o borrado*/
             'render': function(data) {
-                /*Boton para borrar el doctor que carga una ventana modal*/
-                return '<a class="btn btn-warning borrarbtn" data-toggle="modal" data-target="#modalBorrarDoctor" >Borrar</a>';
+                return '<a data-toggle="modal" data-target="#basicModal"  class="btn btn-warning borrarbtn" href=http://localhost/php/borrar.php?id_doctor=' + data + '>Borrar</a>';
             }
-        }],
+        }]
     });
 
-    function cargarClinicasCrear2() {
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'php/listarClinicas.php',
-            async: false,
-            error: function(xhr, status, error) {
-                alert("HA HABIDO UN ERROR")
-            },
-            success: function(data) {
-                $('#clinicas').empty();
-                $.each(data, function() {
-                    $('#clinicas').append(
-                        $('<option ></option>').val(this.id_clinica).html(this.nombre)
-                    );
-                });
 
-            },
-            complete: {}
-        });
-    }
     $('#miTabla').on('click', '.editarbtn', function(e) {
         e.preventDefault();
 
         $('#tabla').fadeOut(100);
-        $('#formularioEditar').fadeIn(100);
+        $('#formulario').fadeIn(100);
 
         var nRow = $(this).parents('tr')[0];
         var aData = miTabla.row(nRow).data();
-        $('#idDoctor').val(aData.id_doctor);
+        $('#idDoctor').val(aData.idDoctor);
         $('#nombre').val(aData.nombre);
         $('#numcolegiado').val(aData.numcolegiado);
-        cargarClinicasCrear2();
-        $('#clinicas').val(aData.clinica);
-        var str = aData.id_clinica;
+        $('#clinicas').val(aData.nombreClinica);
+        // var prueba=$('#idClinica').val(aData.idDoctor);
+        cargarTarifas();
+
+        // alert(aData.idClinica);
+        //selecciono las que estaban
+        var str = aData.idClinica;
+
         str = str.split(",");
+
+        //cargo el select con las que ya estaban
         $('#clinicas').val(str);
 
+
     });
-    //Cargamos nombre de la clinica
-    function cargarClinica() {
+
+
+    $('#miTabla').on('click', '.borrarbtn', function(e) {
+        //e.preventDefault();
+        var nRow = $(this).parents('tr')[0];
+        var aData = miTabla.row(nRow).data();
+        idDoctor = aData.idDoctor;
+
+
+    });
+
+    $('#basicModal').on('click', '#confBorrar', function(e) {
+
+
         $.ajax({
-                type: 'GET',
-                dataType: 'json',
-                url: 'php/cargarClinicasVdoctores.php'
-                    //estos son los datos que queremos actualizar, en json:
-                    // {parametro1: valor1, parametro2, valor2, ….}
-                    //data: { id_clinica: id_clinica, nombre: nombre, ….,  id_tarifa: id_tarifa },
-            })
-            .done(function(data) {
-                $('#clinicas').empty();
-                $.each(data, function() {
-                    $('#clinicas').append(
-                        $('<option></option>').val(this.id_clinica).html(this.clinica)
-                    );
+
+            type: 'POST',
+            dataType: 'json',
+            url: 'php/borrar.php',
+            data: {
+                id_doctor: idDoctor
+            },
+            error: function(xhr, status, error) {
+
+                $.growl({
+
+                    icon: "glyphicon glyphicon-remove",
+                    message: "Error al borrar!"
+
+                }, {
+                    type: "danger"
                 });
-            })
-            .fail(function() {
-                console.log('ha habido un error al obtener el objeto');
-            });
+            },
+            success: function(data) {
 
+                var $mitabla = $("#miTabla").dataTable({
+                    bRetrieve: true
+                });
+                $mitabla.fnDraw();
 
-    }
-    cargarClinica();
+                $.growl({
 
-    //crear doctor
-    $('#formCrear').validate({
+                    icon: "glyphicon glyphicon-remove",
+                    message: "Borrado realizado con exito!"
+
+                }, {
+                    type: "success"
+                });
+            },
+            complete: {
+
+            }
+        });
+        $('#tabla').fadeIn(100);
+    });
+
+    //VALIDACION DEL FORMULARIO EDITAR
+    $('#formularioEditar').validate({
 
         rules: {
-            nombreNuevo: {
+            nombre: {
                 required: true,
                 lettersonly: true
             },
-            numcolegiadoNuevo: {
-                required: false,
+            numcolegiado: {
+                required: true,
                 digits: true
             },
-            clinicas2: {
+            clinicas: {
                 required: true
             }
         },
-        messages: {
-            nombreNuevo: {
-                required: 'Escribe el nombre de doctor',
-                lettersonly: 'Por favor, escribe solo letras.',
-            },
-            numcolegiadoNuevo: {
-                required: 'Escribe el numero de colegiado',
-                digits: 'Solo numeros',
-            },
-            clinicas2: {
-                required: 'Selecciona al menos una clinica',
-            }
-        },
         submitHandler: function() {
-            nombreNuevo = $('#nombreNuevo').val();
-            numcolegiadoNuevo = $('#numcolegiadoNuevo').val();
-            clinicas2 = $('#clinicas2').val();
+
+            idDoctor = $('#idDoctor').val();
+            nombre = $('#nombre').val();
+            numcolegiado = $('#numcolegiado').val();
+            id_clinica = $('#clinicas').val();
+
+
+
+
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: 'php/añadirDoctor.php',
+                url: 'php/editar.php',
+
                 data: {
-                    nombreNuevo: nombreNuevo,
-                    numcolegiadoNuevo: numcolegiadoNuevo,
-                    clinicas2: clinicas2
+                    idDoctor: idDoctor,
+                    nombre: nombre,
+                    numcolegiado: numcolegiado,
+                    id_clinica: id_clinica
+
+                },
+                error: function(xhr, status, error) {
+
+
+                    $.growl({
+
+                        icon: "glyphicon glyphicon-remove",
+                        message: "Error al editar!"
+
+                    }, {
+                        type: "danger"
+                    });
+
                 },
                 success: function(data) {
                     var $mitabla = $("#miTabla").dataTable({
                         bRetrieve: true
                     });
                     $mitabla.fnDraw();
+
+
+
+
                     if (data[0].estado == 0) {
 
                         $.growl({
 
                             icon: "glyphicon glyphicon-ok",
-                            message: "INSERCCIÓN CORRECTA"
+                            message: "Doctor editado correctamente!"
 
                         }, {
                             type: "success"
@@ -209,7 +226,7 @@ $(document).ready(function() {
                         $.growl({
 
                             icon: "glyphicon glyphicon-remove",
-                            message: "ERROR: fallo al hacer el doctor"
+                            message: "Error al editar el doctor!"
 
                         }, {
                             type: "danger"
@@ -217,7 +234,105 @@ $(document).ready(function() {
                     }
 
                 },
-                complete: {}
+                complete: {
+
+
+                }
+            });
+
+            $('#tabla').fadeIn(100);
+            $('#formulario').fadeOut(100);
+
+
+        }
+
+    });
+    //FIN VALIDACION FORMULARIO EDITAR
+
+
+
+
+    //INICIO FORMULARIO AÑADIR
+    $('#formCrear').validate({
+
+        rules: {
+            nombreNuevo: {
+                required: true,
+                lettersonly: true
+            },
+            numcolegiadoNuevo: {
+                required: true,
+                digits: true
+            },
+            clinicas2: {
+                required: true
+            }
+        },
+        submitHandler: function() {
+            nombreNuevo = $('#nombreNuevo').val();
+            numcolegiadoNuevo = $('#numcolegiadoNuevo').val();
+            clinicas2 = $('#clinicas2').val();
+
+
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: 'php/añadirDoctor.php',
+
+                data: {
+                    nombreNuevo: nombreNuevo,
+                    numcolegiadoNuevo: numcolegiadoNuevo,
+                    clinicas2: clinicas2
+
+                },
+
+
+                error: function(xhr, status, error) {
+
+                    $.growl({
+
+                        icon: "glyphicon glyphicon-remove",
+                        message: "Error al añadir el doctor!"
+
+                    }, {
+                        type: "danger"
+                    });
+
+                },
+                success: function(data) {
+                    var $mitabla = $("#miTabla").dataTable({
+                        bRetrieve: true
+                    });
+                    $mitabla.fnDraw();
+
+                    if (data[0].estado == 0) {
+
+                        $.growl({
+
+                            icon: "glyphicon glyphicon-ok",
+                            message: "Doctor añadido correctamente!"
+
+                        }, {
+                            type: "success"
+                        });
+                    } else {
+
+                        $.growl({
+
+                            icon: "glyphicon glyphicon-remove",
+                            message: "Error al añadir el doctor!"
+
+                        }, {
+                            type: "danger"
+                        });
+                    }
+
+                },
+                complete: {
+
+
+                }
             });
             $('#formularioCrear').fadeOut(100);
             $('#tabla').fadeIn(100);
@@ -225,132 +340,83 @@ $(document).ready(function() {
         }
 
     });
+    //FIN FORMULARIO AÑADIR
 
-    //boton añadir doctor
-    $('#añadirDoctor').click(function(e) {
+
+
+    /*boton añadir doctor,oculto tabla para mostrar form*/
+    $('#creaDoc').click(function(e) {
         e.preventDefault();
+
+        //oculto tabla muestro form
         $('#tabla').fadeOut(100);
         $('#formularioCrear').fadeIn(100);
-        cargarClinicasCrear();
-    });
-
-    function cargarClinicasCrear() {
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'php/listarClinicas.php',
-            async: false,
-            error: function(xhr, status, error) {},
-            success: function(data) {
-                $('#clinicas2').empty();
-                $.each(data, function() {
-                    $('#clinicas2').append(
-                        $('<option ></option>').val(this.id_clinica).html(this.nombre)
-                    );
-                });
-
-            },
-            complete: {}
-        });
-    }
-
-    
-    $('#miTabla').on('click', '.borrarbtn', function(e) {
-        var nRow = $(this).parents('tr')[0];
-        var aData = miTabla.row(nRow).data();
-        id_doctor = aData.id_doctor;
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'php/borrar.php',
-            data: {
-                id_doctor: id_doctor
-            },
-            error: function(xhr, status, error) {
-              var $mitabla = $("#miTabla").dataTable({
-                    bRetrieve: true
-                });
-                $mitabla.fnDraw();
-                $.growl({
-                    icon: "glyphicon glyphicon-remove",
-                    message: "SE HA BORRADO EL USUARIO"
-                }, {
-                    type: "danger"
-                });
-            },
-            success: function(data) {
-                var $mitabla = $("#miTabla").dataTable({
-                    bRetrieve: true
-                });
-                $mitabla.fnDraw();
-                $.growl({
-                    icon: "glyphicon glyphicon-remove",
-                    message: "SE HA BORRADO EL USUARIO"
-                }, {
-                    type: "success"
-                });
-            },
-            complete: {}
-        });
-        $('#tabla').fadeIn(100);
-    });
-
-
-
-    //boton de modificar
-    $('#enviar').click(function(e) {
-        e.preventDefault();
-        idDoctor = $('#idDoctor').val();
-        nombre = $('#nombre').val();
-        numcolegiado = $('#numcolegiado').val();
-        idClinica = $('#idClinica').val();
-        nombreClinica = $('#clinicas').val();
-
-
-
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'php/editar.php',
-            //lo más cómodo sería mandar los datos mediante 
-            //var data = $( "form" ).serialize();
-            //pero como el php tiene otros nombres de variables, lo dejo así
-            //estos son los datos que queremos actualizar, en json:
-            data: {
-                idClinica: idClinica,
-                idDoctor: idDoctor,
-                nombre: nombre,
-                numcolegiado: numcolegiado,
-                clinica: nombreClinica,
-            },
-            error: function(xhr, status, error) {
-                //mostraríamos alguna ventana de alerta con el error
-                $.growl({
-                    icon: "glyphicon glyphicon-remove",
-                    message: "SE HA MODIFICADO EL USUARIO"
-                }, {
-                    type: "success"
-                });
-            },
-            success: function(data) {
-                var $mitabla = $("#miTabla").dataTable({
-                    bRetrieve: true
-                });
-                $mitabla.fnDraw();
-                $.growl({
-                    icon: "glyphicon glyphicon-remove",
-                    message: "SE HA MODIFICADO EL USUARIO"
-                }, {
-                    type: "success"
-                });
-            },
-            complete: {
-                //si queremos hacer algo al terminar la petición ajax
-            }
-        });
-
-        $('#tabla').fadeIn(100);
-        $('#formularioEditar').fadeOut(100);
+        cargarClinicaCrear();
 
     });
+
+
+    //INICIO FUNCION CARGARCLINICACREAR
+    function cargarClinicaCrear() {
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: 'php/listar_tarifas.php',
+                async: false,
+
+                error: function(xhr, status, error) {
+
+
+                },
+                success: function(data) {
+                    $('#clinicas2').empty();
+                    $.each(data, function() {
+                        $('#clinicas2').append(
+                            $('<option ></option>').val(this.id_clinica).html(this.nombre)
+                        );
+                    });
+
+                },
+                complete: {
+
+                }
+            });
+        }
+        //FIN FUNCION CARGARCLINICACREAR
+
+
+    //INICIO FUNCION CARGARTARIFAS
+    function cargarTarifas() {
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: 'php/listar_tarifas.php',
+                async: false,
+
+                error: function(xhr, status, error) {
+
+
+                },
+                success: function(data) {
+                    $('#clinicas').empty();
+                    $.each(data, function() {
+                        $('#clinicas').append(
+                            $('<option ></option>').val(this.id_clinica).html(this.nombre)
+                        );
+                    });
+
+                },
+                complete: {
+
+                }
+            });
+        }
+        //FIN FUNCION CARGARTARIFAS
+
+
+
+
+
+
+
 });

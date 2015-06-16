@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 /* Database connection information */
 include("mysql.php" );
 /*
@@ -18,23 +19,21 @@ if (!mysql_select_db($gaSql['db'], $gaSql['link'])) {
     fatal_error('Could not select database ');
 }
 mysql_query('SET names utf8');
+//$_REQUEST['id_doctor'] = 1;
 if (isset($_REQUEST['id_doctor'])) {
+    // param was set in the query string
     if (empty($_REQUEST['id_doctor'])) {
         return "El parámetro id_doctor viene vacio!";
     }
-    $idDoctor = $_REQUEST['id_doctor'];
+    $id_doctor = $_REQUEST['id_doctor'];
 }
-echo $idDoctor;
 /*
  * SQL queries
  * Get data to display
  */
-$query1 = "delete from clinica_doctor where id_doctor=" . $idDoctor . "";
-$query1_res = mysql_query($query1);
-
-
-$query = "delete from doctores where id_doctor=" . $idDoctor . "";
+$query = "delete from doctores where id_doctor=" . $id_doctor;
 $query_res = mysql_query($query);
+// Comprobar el resultado
 if (!$query_res) {
     if (mysql_errno() == 1451) {
         $mensaje = "Imposible borrar la clínica, tiene doctores definidos. Borre primero los doctores";
